@@ -1,18 +1,85 @@
 aid: linear
 url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/apis.yml
+modified: '2026-03-18'
+maintainer:
+  name: Kin Lane
+  email: kin@apievangelist.com
 apis:
-- aid: linear:linear-api
-  name: Linear Issue Tracking API
+- aid: linear:linear-graphql-api
+  name: Linear GraphQL API
   tags:
   - Issue Tracking
   - Project Management
-  - DevOps
   - GraphQL
+  - Agile
   image: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
-  humanURL: https://linear.app/docs/graphql/working-with-the-graphql-api
+  humanURL: https://linear.app/developers/graphql
   baseURL: https://api.linear.app/graphql
   properties:
-  - url: https://linear.app/docs/graphql/working-with-the-graphql-api
+  - url: https://linear.app/developers/graphql
     type: Documentation
+  - url: https://studio.apollographql.com/public/Linear-API/schema/reference?variant=current
+    type: Reference
+  - url: https://linear.app/developers/oauth-2-0-authentication
+    type: Authentication
+  - url: https://linear.app/developers/sdk
+    type: Getting Started
+  - url: https://linear.app/developers/rate-limiting
+    type: Rate Limits
+  - url: https://linear.app/developers/pagination
+    type: Pagination
+  - url: https://linear.app/developers/filtering
+    type: Filtering
+  - url: https://linear.app/developers/deprecations
+    type: Deprecation Notice
   description: >-
-    Linear provides a streamlined issue tracking and project management API built for software development teams. The GraphQL API enables creating, updating, and querying issues, projects, cycles, and roadmaps with real-time sync and webhook support.
+    Linear's public GraphQL API provides full access to create, read, update, and
+    query issues, projects, cycles, roadmaps, and teams. It is the same API Linear
+    uses internally for its own applications, supporting pagination, filtering,
+    attachments, and file uploads.
+- aid: linear:linear-webhooks-api
+  name: Linear Webhooks API
+  tags:
+  - Webhooks
+  - Events
+  - Real-Time
+  image: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
+  humanURL: https://linear.app/developers/webhooks
+  baseURL: https://api.linear.app/graphql
+  properties:
+  - url: https://linear.app/developers/webhooks
+    type: Documentation
+  - url: https://linear.app/developers/sdk-webhooks
+    type: Getting Started
+  description: >-
+    Linear webhooks deliver HTTP push notifications whenever data is created,
+    updated, or removed. Webhooks are organization-scoped and can be configured
+    for all public teams or a single team, enabling integrations that trigger
+    CI builds, update external systems, or send messages based on issue activity.
+common:
+- url: https://linear.app/developers
+  type: Portal
+- url: https://linear.app/developers/graphql
+  type: Getting Started
+- url: https://linear.app/developers/oauth-2-0-authentication
+  type: Authentication
+- url: https://linear.app/developers/rate-limiting
+  type: Rate Limits
+- url: https://linear.app/changelog
+  type: Change Log
+- url: https://linear.app/developers/deprecations
+  type: Deprecation Notice
+- url: https://linear.app/developers/migrating-from-1-x-to-2-x
+  type: Migration Guide
+- url: https://linear.app/contact/support
+  type: Support
+- url: https://linear.app
+  type: Website
+- url: https://www.npmjs.com/package/@linear/sdk
+  type: SDKs
+- url: https://github.com/linear/linear
+  type: GitHub Organization
+- url: https://github.com/linear/linear/tree/master/packages/sdk
+  type: GitHubRepository
+- url: https://linear.app/developers/integration-directory
+  type: Developer Tools
