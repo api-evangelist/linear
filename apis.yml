@@ -1,0 +1,18 @@
+aid: linear
+url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/apis.yml
+apis:
+- aid: linear:linear-api
+  name: Linear Issue Tracking API
+  tags:
+  - Issue Tracking
+  - Project Management
+  - DevOps
+  - GraphQL
+  image: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
+  humanURL: https://linear.app/docs/graphql/working-with-the-graphql-api
+  baseURL: https://api.linear.app/graphql
+  properties:
+  - url: https://linear.app/docs/graphql/working-with-the-graphql-api
+    type: Documentation
+  description: >-
+    Linear provides a streamlined issue tracking and project management API built for software development teams. The GraphQL API enables creating, updating, and querying issues, projects, cycles, and roadmaps with real-time sync and webhook support.
