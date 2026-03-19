@@ -1,0 +1,246 @@
+openapi: 3.1.0
+info:
+  title: Linear GraphQL API
+  description: >-
+    Linear's public GraphQL API provides full access to create, read, update,
+    and query issues, projects, cycles, roadmaps, and teams. It is the same API
+    Linear uses internally for its own applications, supporting pagination,
+    filtering, attachments, and file uploads.
+  version: 2.0.0
+  contact:
+    name: Linear Support
+    url: https://linear.app/contact/support
+  license:
+    name: Proprietary
+    url: https://linear.app/terms
+externalDocs:
+  description: Linear Developer Documentation
+  url: https://linear.app/developers/graphql
+servers:
+  - url: https://api.linear.app/graphql
+    description: Linear GraphQL endpoint
+security:
+  - BearerAuth: []
+  - OAuth2: [read, write]
+paths:
+  /graphql:
+    post:
+      operationId: executeGraphQLQuery
+      summary: Execute a GraphQL query or mutation
+      description: >-
+        Send a GraphQL query or mutation to the Linear API. All operations
+        (issues, projects, teams, cycles, roadmaps, comments, attachments) are
+        performed through this single endpoint using GraphQL introspection.
+      tags:
+        - GraphQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+            examples:
+              listIssues:
+                summary: List issues
+                value:
+                  query: |
+                    query {
+                      issues(first: 10) {
+                        nodes {
+                          id
+                          title
+                          state { name }
+                          assignee { name }
+                          priority
+                          createdAt
+                        }
+                        pageInfo { hasNextPage endCursor }
+                      }
+                    }
+              createIssue:
+                summary: Create an issue
+                value:
+                  query: |
+                    mutation CreateIssue($input: IssueCreateInput!) {
+                      issueCreate(input: $input) {
+                        success
+                        issue { id title url }
+                      }
+                    }
+                  variables:
+                    input:
+                      title: "Fix login bug"
+                      description: "Users cannot log in with SSO"
+                      teamId: "team_abc123"
+                      priority: 2
+      responses:
+        '200':
+          description: GraphQL response (errors may still be present in the response body)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+        '400':
+          description: Bad request — malformed GraphQL syntax
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Maximum requests per window
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Requests remaining in the current window
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+              description: Unix timestamp when rate limit resets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /graphql/upload:
+    post:
+      operationId: uploadFile
+      summary: Upload a file attachment
+      description: >-
+        Upload files for use as attachments on issues or comments. Returns a
+        signed URL and asset URL for use in subsequent GraphQL mutations.
+      tags:
+        - Attachments
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload
+                contentType:
+                  type: string
+                  description: MIME type of the file
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Personal API key obtained from Linear settings
+    OAuth2:
+      type: oauth2
+      description: OAuth 2.0 authorization code flow
+      flows:
+        authorizationCode:
+          authorizationUrl: https://linear.app/oauth/authorize
+          tokenUrl: https://api.linear.app/oauth/token
+          scopes:
+            read: Read access to all resources
+            write: Write access to all resources
+            issues:create: Create issues
+            issues:read: Read issues
+  schemas:
+    GraphQLRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: The GraphQL query or mutation string
+        variables:
+          type: object
+          additionalProperties: true
+          description: Named variables for the query or mutation
+        operationName:
+          type: string
+          description: The name of the operation to execute (for multi-operation documents)
+    GraphQLResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          description: The data returned by the GraphQL operation
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+    GraphQLError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+        path:
+          type: array
+          items:
+            type: string
+        extensions:
+          type: object
+          additionalProperties: true
+    FileUploadResponse:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+          format: uri
+          description: Signed URL to PUT the file to
+        assetUrl:
+          type: string
+          format: uri
+          description: URL to reference the asset in Linear
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Headers required when uploading to the signed URL
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error message
+tags:
+  - name: GraphQL
+    description: Core GraphQL query and mutation endpoint
+  - name: Attachments
+    description: File upload for issue and comment attachments

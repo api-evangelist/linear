@@ -32,6 +32,12 @@ apis:
     type: Filtering
   - url: https://linear.app/developers/deprecations
     type: Deprecation Notice
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/openapi/linear-graphql-openapi.yml
+    type: OpenAPI
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json
+    type: JSONSchema
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
+    type: JSONLDContext
   description: >-
     Linear's public GraphQL API provides full access to create, read, update, and
     query issues, projects, cycles, roadmaps, and teams. It is the same API Linear
@@ -51,6 +57,8 @@ apis:
     type: Documentation
   - url: https://linear.app/developers/sdk-webhooks
     type: Getting Started
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
+    type: AsyncAPI
   description: >-
     Linear webhooks deliver HTTP push notifications whenever data is created,
     updated, or removed. Webhooks are organization-scoped and can be configured
@@ -83,3 +91,11 @@ common:
   type: GitHubRepository
 - url: https://linear.app/developers/integration-directory
   type: Developer Tools
+- url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/openapi/linear-graphql-openapi.yml
+  type: OpenAPI
+- url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
+  type: AsyncAPI
+- url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json
+  type: JSONSchema
+- url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
+  type: JSONLDContext

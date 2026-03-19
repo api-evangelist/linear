@@ -1,0 +1,356 @@
+asyncapi: 2.6.0
+info:
+  title: Linear Webhooks API
+  version: 2.0.0
+  description: >-
+    Linear webhooks deliver HTTP push notifications whenever data is created,
+    updated, or removed. Webhooks are organization-scoped and can be configured
+    for all public teams or a single team, enabling integrations that trigger
+    CI builds, update external systems, or send messages based on issue activity.
+  contact:
+    name: Linear Support
+    url: https://linear.app/contact/support
+  license:
+    name: Proprietary
+    url: https://linear.app/terms
+externalDocs:
+  description: Linear Webhooks Documentation
+  url: https://linear.app/developers/webhooks
+servers:
+  production:
+    url: https://api.linear.app
+    protocol: https
+    description: Linear production server (webhook source)
+defaultContentType: application/json
+channels:
+  issue/created:
+    description: Fired when a new issue is created
+    subscribe:
+      operationId: onIssueCreated
+      summary: Issue created
+      description: >-
+        Delivered when a new issue is created in a team. Contains the full issue
+        object including title, state, assignee, priority, and team.
+      tags:
+        - name: Issues
+      message:
+        $ref: '#/components/messages/IssueCreated'
+  issue/updated:
+    description: Fired when an issue is updated
+    subscribe:
+      operationId: onIssueUpdated
+      summary: Issue updated
+      description: >-
+        Delivered when any field of an issue changes including state transitions,
+        assignee changes, priority updates, and label modifications.
+      tags:
+        - name: Issues
+      message:
+        $ref: '#/components/messages/IssueUpdated'
+  issue/removed:
+    description: Fired when an issue is deleted or trashed
+    subscribe:
+      operationId: onIssueRemoved
+      summary: Issue removed
+      description: Delivered when an issue is deleted or moved to trash.
+      tags:
+        - name: Issues
+      message:
+        $ref: '#/components/messages/IssueRemoved'
+  comment/created:
+    description: Fired when a comment is added to an issue
+    subscribe:
+      operationId: onCommentCreated
+      summary: Comment created
+      description: >-
+        Delivered when a new comment is added to an issue or a reply is added
+        to an existing comment.
+      tags:
+        - name: Comments
+      message:
+        $ref: '#/components/messages/CommentCreated'
+  comment/updated:
+    description: Fired when a comment is edited
+    subscribe:
+      operationId: onCommentUpdated
+      summary: Comment updated
+      description: Delivered when the body of a comment is edited by its author.
+      tags:
+        - name: Comments
+      message:
+        $ref: '#/components/messages/CommentUpdated'
+  project/created:
+    description: Fired when a project is created
+    subscribe:
+      operationId: onProjectCreated
+      summary: Project created
+      description: Delivered when a new project is created within the organization.
+      tags:
+        - name: Projects
+      message:
+        $ref: '#/components/messages/ProjectCreated'
+  project/updated:
+    description: Fired when a project is updated
+    subscribe:
+      operationId: onProjectUpdated
+      summary: Project updated
+      description: >-
+        Delivered when project details, state, milestones, or member lists change.
+      tags:
+        - name: Projects
+      message:
+        $ref: '#/components/messages/ProjectUpdated'
+  cycle/created:
+    description: Fired when a cycle (sprint) is created
+    subscribe:
+      operationId: onCycleCreated
+      summary: Cycle created
+      description: Delivered when a new cycle is created in a team.
+      tags:
+        - name: Cycles
+      message:
+        $ref: '#/components/messages/CycleCreated'
+  issueLabelCreated:
+    description: Fired when an issue label is created
+    subscribe:
+      operationId: onIssueLabelCreated
+      summary: Issue label created
+      description: Delivered when a new label is created in a team.
+      tags:
+        - name: Labels
+      message:
+        $ref: '#/components/messages/IssueLabelCreated'
+components:
+  messages:
+    IssueCreated:
+      name: IssueCreated
+      title: Issue Created Event
+      summary: Payload for issue.create webhook events
+      payload:
+        $ref: '#/components/schemas/IssueWebhookPayload'
+    IssueUpdated:
+      name: IssueUpdated
+      title: Issue Updated Event
+      summary: Payload for issue.update webhook events
+      payload:
+        $ref: '#/components/schemas/IssueWebhookPayload'
+    IssueRemoved:
+      name: IssueRemoved
+      title: Issue Removed Event
+      summary: Payload for issue.remove webhook events
+      payload:
+        $ref: '#/components/schemas/IssueWebhookPayload'
+    CommentCreated:
+      name: CommentCreated
+      title: Comment Created Event
+      summary: Payload for comment.create webhook events
+      payload:
+        $ref: '#/components/schemas/CommentWebhookPayload'
+    CommentUpdated:
+      name: CommentUpdated
+      title: Comment Updated Event
+      summary: Payload for comment.update webhook events
+      payload:
+        $ref: '#/components/schemas/CommentWebhookPayload'
+    ProjectCreated:
+      name: ProjectCreated
+      title: Project Created Event
+      summary: Payload for project.create webhook events
+      payload:
+        $ref: '#/components/schemas/ProjectWebhookPayload'
+    ProjectUpdated:
+      name: ProjectUpdated
+      title: Project Updated Event
+      summary: Payload for project.update webhook events
+      payload:
+        $ref: '#/components/schemas/ProjectWebhookPayload'
+    CycleCreated:
+      name: CycleCreated
+      title: Cycle Created Event
+      summary: Payload for cycle.create webhook events
+      payload:
+        $ref: '#/components/schemas/CycleWebhookPayload'
+    IssueLabelCreated:
+      name: IssueLabelCreated
+      title: Issue Label Created Event
+      summary: Payload for issueLabel.create webhook events
+      payload:
+        $ref: '#/components/schemas/IssueLabelWebhookPayload'
+  schemas:
+    WebhookBase:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum: [create, update, remove]
+          description: The type of action that triggered the webhook
+        organizationId:
+          type: string
+          description: ID of the organization that owns the webhook
+        webhookTimestamp:
+          type: integer
+          description: Unix timestamp (ms) when the webhook was fired
+        webhookId:
+          type: string
+          description: UUID of the webhook configuration
+        type:
+          type: string
+          description: The entity type (e.g., Issue, Comment, Project)
+    IssueWebhookPayload:
+      allOf:
+        - $ref: '#/components/schemas/WebhookBase'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [Issue]
+            data:
+              type: object
+              description: The full issue object
+              properties:
+                id:
+                  type: string
+                identifier:
+                  type: string
+                title:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: integer
+                  enum: [0, 1, 2, 3, 4]
+                state:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+                    type: { type: string }
+                assignee:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+                    email: { type: string }
+                team:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+                    key: { type: string }
+                url:
+                  type: string
+                  format: uri
+                createdAt:
+                  type: string
+                  format: date-time
+                updatedAt:
+                  type: string
+                  format: date-time
+            updatedFrom:
+              type: object
+              description: Previous values for updated fields (only on update events)
+              additionalProperties: true
+    CommentWebhookPayload:
+      allOf:
+        - $ref: '#/components/schemas/WebhookBase'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [Comment]
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                body:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+                issue:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    identifier: { type: string }
+                    title: { type: string }
+                createdAt:
+                  type: string
+                  format: date-time
+                updatedAt:
+                  type: string
+                  format: date-time
+    ProjectWebhookPayload:
+      allOf:
+        - $ref: '#/components/schemas/WebhookBase'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [Project]
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                state:
+                  type: string
+                  enum: [planned, started, paused, completed, cancelled]
+                createdAt:
+                  type: string
+                  format: date-time
+                updatedAt:
+                  type: string
+                  format: date-time
+    CycleWebhookPayload:
+      allOf:
+        - $ref: '#/components/schemas/WebhookBase'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [Cycle]
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                number:
+                  type: integer
+                name:
+                  type: string
+                startsAt:
+                  type: string
+                  format: date-time
+                endsAt:
+                  type: string
+                  format: date-time
+                teamId:
+                  type: string
+    IssueLabelWebhookPayload:
+      allOf:
+        - $ref: '#/components/schemas/WebhookBase'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [IssueLabel]
+            data:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                color:
+                  type: string
+                teamId:
+                  type: string

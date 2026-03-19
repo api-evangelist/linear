@@ -1,0 +1,68 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "schema": "https://schema.org/",
+    "linear": "https://linear.app/developers/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "Issue": "schema:SoftwareApplication",
+    "id": "@id",
+    "title": "schema:name",
+    "description": "schema:description",
+    "url": "schema:url",
+    "createdAt": {
+      "@id": "schema:dateCreated",
+      "@type": "xsd:dateTime"
+    },
+    "updatedAt": {
+      "@id": "schema:dateModified",
+      "@type": "xsd:dateTime"
+    },
+    "completedAt": {
+      "@id": "schema:endDate",
+      "@type": "xsd:dateTime"
+    },
+    "dueDate": {
+      "@id": "schema:expires",
+      "@type": "xsd:date"
+    },
+    "assignee": "schema:contributor",
+    "creator": "schema:author",
+    "User": "schema:Person",
+    "name": "schema:name",
+    "email": "schema:email",
+    "avatarUrl": "schema:image",
+    "Team": "schema:Organization",
+    "Project": "schema:Project",
+    "Cycle": "schema:Event",
+    "startsAt": {
+      "@id": "schema:startDate",
+      "@type": "xsd:dateTime"
+    },
+    "endsAt": {
+      "@id": "schema:endDate",
+      "@type": "xsd:dateTime"
+    },
+    "IssueLabel": "schema:DefinedTerm",
+    "color": "schema:color",
+    "priority": {
+      "@id": "linear:priority",
+      "@type": "xsd:integer"
+    },
+    "estimate": {
+      "@id": "linear:estimate",
+      "@type": "xsd:decimal"
+    },
+    "state": "schema:status",
+    "labels": {
+      "@id": "schema:keywords",
+      "@container": "@set"
+    },
+    "identifier": {
+      "@id": "schema:identifier"
+    },
+    "branchName": {
+      "@id": "linear:branchName"
+    }
+  }
+}

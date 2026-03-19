@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json",
+  "title": "Linear Issue",
+  "description": "A Linear issue representing a unit of work within a team",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique UUID identifier for the issue"
+    },
+    "identifier": {
+      "type": "string",
+      "description": "Human-readable identifier like ENG-123",
+      "pattern": "^[A-Z]+-[0-9]+$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the issue",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "description": {
+      "type": "string",
+      "description": "Markdown description of the issue"
+    },
+    "priority": {
+      "type": "integer",
+      "description": "Priority: 0=No Priority, 1=Urgent, 2=High, 3=Medium, 4=Low",
+      "enum": [0, 1, 2, 3, 4]
+    },
+    "estimate": {
+      "type": "number",
+      "description": "Story point estimate"
+    },
+    "state": {
+      "$ref": "#/$defs/WorkflowState"
+    },
+    "assignee": {
+      "$ref": "#/$defs/User"
+    },
+    "creator": {
+      "$ref": "#/$defs/User"
+    },
+    "team": {
+      "$ref": "#/$defs/Team"
+    },
+    "project": {
+      "$ref": "#/$defs/Project"
+    },
+    "cycle": {
+      "$ref": "#/$defs/Cycle"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/IssueLabel"
+      }
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Direct URL to the issue in Linear"
+    },
+    "branchName": {
+      "type": "string",
+      "description": "Suggested git branch name for the issue"
+    },
+    "dueDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Due date for the issue"
+    },
+    "completedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Timestamp when the issue was completed"
+    },
+    "canceledAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Timestamp when the issue was canceled"
+    },
+    "startedAt": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Timestamp when work on the issue started"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the issue was created"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the issue was last updated"
+    },
+    "number": {
+      "type": "integer",
+      "description": "Sequential number within the team"
+    },
+    "trashed": {
+      "type": "boolean",
+      "description": "Whether the issue is in the trash"
+    }
+  },
+  "required": ["id", "identifier", "title", "createdAt", "updatedAt"],
+  "$defs": {
+    "WorkflowState": {
+      "type": "object",
+      "description": "Workflow state of an issue",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["triage", "backlog", "unstarted", "started", "completed", "cancelled"]
+        },
+        "color": {
+          "type": "string",
+          "description": "Hex color code",
+          "pattern": "^#[0-9a-fA-F]{6}$"
+        }
+      },
+      "required": ["id", "name", "type"]
+    },
+    "User": {
+      "type": "object",
+      "description": "A Linear user",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "avatarUrl": { "type": "string", "format": "uri" },
+        "active": { "type": "boolean" }
+      },
+      "required": ["id", "name"]
+    },
+    "Team": {
+      "type": "object",
+      "description": "A Linear team",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "key": {
+          "type": "string",
+          "description": "Short team identifier used in issue identifiers"
+        },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "name", "key"]
+    },
+    "Project": {
+      "type": "object",
+      "description": "A Linear project grouping related issues",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "state": {
+          "type": "string",
+          "enum": ["planned", "started", "paused", "completed", "cancelled"]
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Completion progress from 0 to 1"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "Cycle": {
+      "type": "object",
+      "description": "A sprint cycle in Linear",
+      "properties": {
+        "id": { "type": "string" },
+        "number": { "type": "integer" },
+        "name": { "type": "string" },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "number"]
+    },
+    "IssueLabel": {
+      "type": "object",
+      "description": "A label applied to an issue",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+      },
+      "required": ["id", "name"]
+    }
+  }
+}
