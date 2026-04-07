@@ -1,6 +1,5 @@
 aid: linear
-url: 
-  https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/apis.yml
+url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/apis.yml
 modified: '2026-03-18'
 maintainer:
   name: Kin Lane
@@ -9,19 +8,17 @@ apis:
   - aid: linear:linear-graphql-api
     name: Linear GraphQL API
     tags:
+      - Agile
+      - GraphQL
       - Issue Tracking
       - Project Management
-      - GraphQL
-      - Agile
-    image: 
-      https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
+    image: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
     humanURL: https://linear.app/developers/graphql
     baseURL: https://api.linear.app/graphql
     properties:
       - url: https://linear.app/developers/graphql
         type: Documentation
-      - url: 
-          https://studio.apollographql.com/public/Linear-API/schema/reference?variant=current
+      - url: https://studio.apollographql.com/public/Linear-API/schema/reference?variant=current
         type: Reference
       - url: https://linear.app/developers/oauth-2-0-authentication
         type: Authentication
@@ -35,14 +32,11 @@ apis:
         type: Filtering
       - url: https://linear.app/developers/deprecations
         type: Deprecation Notice
-      - url: 
-          https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/openapi/linear-graphql-openapi.yml
+      - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/openapi/linear-graphql-openapi.yml
         type: OpenAPI
-      - url: 
-          https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json
+      - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json
         type: JSONSchema
-      - url: 
-          https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
+      - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
         type: JSONLDContext
     description: >-
       Linear's public GraphQL API provides full access to create, read, update, and
@@ -52,11 +46,10 @@ apis:
   - aid: linear:linear-webhooks-api
     name: Linear Webhooks API
     tags:
-      - Webhooks
       - Events
       - Real-Time
-    image: 
-      https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
+      - Webhooks
+    image: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/image.png
     humanURL: https://linear.app/developers/webhooks
     baseURL: https://api.linear.app/graphql
     properties:
@@ -64,8 +57,7 @@ apis:
         type: Documentation
       - url: https://linear.app/developers/sdk-webhooks
         type: Getting Started
-      - url: 
-          https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
+      - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
         type: AsyncAPI
     description: >-
       Linear webhooks deliver HTTP push notifications whenever data is created,
@@ -99,17 +91,13 @@ common:
     type: GitHubRepository
   - url: https://linear.app/developers/integration-directory
     type: Developer Tools
-  - url: 
-      https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/openapi/linear-graphql-openapi.yml
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/openapi/linear-graphql-openapi.yml
     type: OpenAPI
-  - url: 
-      https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
     type: AsyncAPI
-  - url: 
-      https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-schema/linear-issue-schema.json
     type: JSONSchema
-  - url: 
-      https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
+  - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
     type: JSONLDContext
 description: >-
   Linear's public API is built using GraphQL. It's the same API we use internally
