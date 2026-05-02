@@ -1,10 +1,20 @@
-# Unknown (linear)
+# Linear (linear)
+
+Linear's public API is built using GraphQL. It's the same API Linear uses internally for developing its applications, providing full access to issues, projects, cycles, roadmaps, teams, and webhooks for real-time event delivery.
 
 **URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/apis.yml)
 
+## Tags
+
+- Agile
+- GraphQL
+- Issue Tracking
+- Project Management
+- Webhooks
+
 ## Timestamps
 
-- **Modified:** 2026-03-18 
+- **Modified:** 2026-04-28 
 
 ## APIs
 
