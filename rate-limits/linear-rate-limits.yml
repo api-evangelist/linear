@@ -1,0 +1,36 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Linear
+providerId: linear
+created: '2026-05-04'
+modified: '2026-05-04'
+reconciled: true
+tags:
+  - Rate Limiting
+  - Issue Tracking
+description: Linear GraphQL API rate limits per API key.
+sources:
+  - https://linear.app/pricing
+  - https://developers.linear.app/docs/graphql/working-with-the-graphql-api/rate-limiting
+headers:
+  requests: X-RateLimit-Requests-Limit
+  remaining: X-RateLimit-Requests-Remaining
+responseCodes:
+  throttled: 429
+limits:
+  - name: API Key (read)
+    scope: api_key
+    metric: requests_per_hour
+    limit: 1500
+    timeFrame: hour
+  - name: OAuth (per user)
+    scope: user
+    metric: requests_per_hour
+    limit: 1200
+    timeFrame: hour
+  - name: Complexity
+    scope: request
+    metric: complexity_points
+    limit: 250000
+    timeFrame: hour

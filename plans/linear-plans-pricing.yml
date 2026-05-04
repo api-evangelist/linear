@@ -1,0 +1,111 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: Linear
+providerId: linear
+created: '2026-05-04'
+modified: '2026-05-04'
+reconciled: true
+tags:
+  - Issue Tracking
+  - Project Management
+  - Engineering
+description: Linear per-user-per-month pricing for issue tracking.
+sources:
+  - https://linear.app/pricing
+plans:
+  - id: linear-free
+    name: Free
+    type: freemium
+    description: Up to 250 issues, 2 teams, unlimited members.
+    entries:
+      - label: Per user
+        name: seat
+        type: subscription
+        metric: user
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '0.00'
+        userMultiplied: true
+      - label: Issues
+        name: issues
+        type: quota
+        metric: issue
+        limit: 250
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '0.00'
+        userMultiplied: false
+    elements:
+      - name: Unlimited members
+      - name: 2 teams
+      - name: 250 issues
+      - name: Agent platform
+      - name: Linear Agent (beta)
+  - id: linear-basic
+    name: Basic
+    type: paid
+    description: $10/user/month.
+    entries:
+      - label: Per user
+        name: seat
+        type: subscription
+        metric: user
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '10.00'
+        userMultiplied: true
+    elements:
+      - name: 5 teams
+      - name: Unlimited issues
+      - name: Unlimited file uploads
+      - name: Admin roles
+  - id: linear-business
+    name: Business
+    type: paid
+    description: $16/user/month.
+    entries:
+      - label: Per user
+        name: seat
+        type: subscription
+        metric: user
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: '16.00'
+        userMultiplied: true
+    elements:
+      - name: Unlimited teams
+      - name: Private teams and guests
+      - name: Triage Intelligence
+      - name: Linear Agent automations
+      - name: Linear Insights/Asks
+      - name: Zendesk/Intercom integrations
+  - id: linear-enterprise
+    name: Enterprise
+    type: enterprise
+    description: Custom pricing.
+    entries:
+      - label: Per user (custom)
+        name: seat
+        type: subscription
+        metric: user
+        limit: -1
+        timeFrame: month
+        geo: global
+        unit: 1
+        price: custom
+        userMultiplied: true
+    elements:
+      - name: SAML/SCIM
+      - name: Granular admin
+      - name: Advanced org modeling
+      - name: Migration support
+      - name: Priority support
+      - name: Account management
