@@ -117,6 +117,19 @@ common:
     sources:
       - https://linear.app/pricing
     updated: '2026-05-04'
+  - type: Integrations
+    url: https://linear.app/integrations
 description: Linear's public API is built using GraphQL. It's the same API we use internally for developing
   our applications. If you are new to GraphQL, Apollo has resources for beginners. The official GraphQL
   documentation is another good starting point.
+integrations:
+  - name: Essentials
+  - name: Agents
+  - name: AI clients
+  - name: Engineering
+  - name: Linear crafted
+  - name: Bug Reporting
+  - name: Automations
+  - name: Customer Experience
+  - name: Security & Compliance
+  - name: Media & Design
