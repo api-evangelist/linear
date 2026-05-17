@@ -23,9 +23,9 @@ apis:
       - url: https://linear.app/developers/oauth-2-0-authentication
         type: Authentication
       - url: https://linear.app/developers/sdk
-        type: Getting Started
+        type: GettingStarted
       - url: https://linear.app/developers/rate-limiting
-        type: Rate Limits
+        type: RateLimits
       - url: https://linear.app/developers/pagination
         type: Pagination
       - url: https://linear.app/developers/filtering
@@ -54,7 +54,7 @@ apis:
       - url: https://linear.app/developers/webhooks
         type: Documentation
       - url: https://linear.app/developers/sdk-webhooks
-        type: Getting Started
+        type: GettingStarted
       - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
         type: AsyncAPI
     description: Linear webhooks deliver HTTP push notifications whenever data is created, updated, or
@@ -65,13 +65,13 @@ common:
   - url: https://linear.app/developers
     type: Portal
   - url: https://linear.app/developers/graphql
-    type: Getting Started
+    type: GettingStarted
   - url: https://linear.app/developers/oauth-2-0-authentication
     type: Authentication
   - url: https://linear.app/developers/rate-limiting
-    type: Rate Limits
+    type: RateLimits
   - url: https://linear.app/changelog
-    type: Change Log
+    type: ChangeLog
   - url: https://linear.app/developers/deprecations
     type: Deprecation Notice
   - url: https://linear.app/developers/migrating-from-1-x-to-2-x
@@ -83,7 +83,7 @@ common:
   - url: https://www.npmjs.com/package/@linear/sdk
     type: SDKs
   - url: https://github.com/linear/linear
-    type: GitHub Organization
+    type: GitHubOrganization
   - url: https://github.com/linear/linear/tree/master/packages/sdk
     type: GitHubRepository
   - url: https://linear.app/developers/integration-directory
