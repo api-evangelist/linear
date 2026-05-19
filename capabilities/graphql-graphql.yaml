@@ -1,0 +1,80 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Linear GraphQL API — GraphQL
+  description: 'Linear GraphQL API — GraphQL. 1 operations. Lead operation: Execute a GraphQL query or mutation. Self-contained
+    Naftiko capability covering one Linear business surface.'
+  tags:
+  - Linear
+  - GraphQL
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: graphql-graphql
+    baseUri: https://api.linear.app/graphql
+    description: Linear GraphQL API — GraphQL business capability. Self-contained, no shared references.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Execute a GraphQL query or mutation
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.LINEAR_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: graphql-graphql-rest
+    port: 8080
+    description: REST adapter for Linear GraphQL API — GraphQL. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/graphql
+      name: graphql
+      description: REST surface for graphql.
+      operations:
+      - method: POST
+        name: executegraphqlquery
+        description: Execute a GraphQL query or mutation
+        call: graphql-graphql.executegraphqlquery
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: graphql-graphql-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Linear GraphQL API — GraphQL. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: execute-graphql-query-mutation
+      description: Execute a GraphQL query or mutation
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: false
+      call: graphql-graphql.executegraphqlquery
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
