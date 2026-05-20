@@ -1,0 +1,110 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Post Linear issue updates into Slack channels
+  description: When a Linear issue is created, assigned, or transitions to Done, post a formatted message to a configured Slack channel via Incoming Webhook.
+  tags:
+  - Linear
+  - Integration
+  - Chat
+  - slack
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    SLACK_API_KEY: SLACK_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Subscribe to Linear issue state changes via GraphQL polling or fetch the issue details for the Slack payload.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: slack
+    baseUri: https://hooks.slack.com
+    description: Slack Incoming Webhooks operations consumed by this integration.
+    resources:
+    - name: services-t-b-x
+      path: /services/{T}/{B}/{X}
+      operations:
+      - name: postmessage
+        method: POST
+        description: 'Slack Incoming Webhooks: postMessage'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: T
+          in: path
+          type: string
+          description: Path parameter T.
+          required: true
+        - name: B
+          in: path
+          type: string
+          description: Path parameter B.
+          required: true
+        - name: X
+          in: path
+          type: string
+          description: Path parameter X.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-slack-mcp
+    description: MCP adapter for the linear-slack integration.
+    tools:
+    - name: linear_slack
+      description: Execute the linear slack integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-slack-rest
+    port: 8080
+    description: REST adapter for the linear-slack integration.
+    resources:
+    - path: /linear-slack
+      name: linear-slack
+      description: REST surface for the linear-slack integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-slack integration.
+        call: linear_slack
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

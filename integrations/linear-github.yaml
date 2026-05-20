@@ -1,0 +1,154 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Create Linear issues from GitHub pull requests
+  description: When a GitHub pull request is opened (or labeled "needs-issue"), create a matching Linear issue, link the PR URL as an attachment, and post the new issue URL back to the PR as a comment.
+  tags:
+  - Linear
+  - Integration
+  - Source control
+  - github
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    GITHUB_API_KEY: GITHUB_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the issue and attach the PR URL.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: graphql-upload
+      path: /graphql/upload
+      operations:
+      - name: uploadfile
+        method: POST
+        description: Upload a file referenced by the PR (e.g. screenshot) into Linear as an attachment.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: github
+    baseUri: https://api.github.com
+    description: GitHub REST API operations consumed by this integration.
+    resources:
+    - name: repos-owner-repo-pulls-pull-number
+      path: /repos/{owner}/{repo}/pulls/{pull_number}
+      operations:
+      - name: getpullrequest
+        method: GET
+        description: 'GitHub REST API: getPullRequest'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: owner
+          in: path
+          type: string
+          description: Path parameter owner.
+          required: true
+        - name: repo
+          in: path
+          type: string
+          description: Path parameter repo.
+          required: true
+        - name: pull_number
+          in: path
+          type: string
+          description: Path parameter pull_number.
+          required: true
+    - name: repos-owner-repo-issues-issue-number-comments
+      path: /repos/{owner}/{repo}/issues/{issue_number}/comments
+      operations:
+      - name: createissuecomment
+        method: POST
+        description: 'GitHub REST API: createIssueComment'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: owner
+          in: path
+          type: string
+          description: Path parameter owner.
+          required: true
+        - name: repo
+          in: path
+          type: string
+          description: Path parameter repo.
+          required: true
+        - name: issue_number
+          in: path
+          type: string
+          description: Path parameter issue_number.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-github-mcp
+    description: MCP adapter for the linear-github integration.
+    tools:
+    - name: linear_github
+      description: Execute the linear github integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-github-rest
+    port: 8080
+    description: REST adapter for the linear-github integration.
+    resources:
+    - path: /linear-github
+      name: linear-github
+      description: REST surface for the linear-github integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-github integration.
+        call: linear_github
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

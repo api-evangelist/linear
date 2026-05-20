@@ -1,0 +1,117 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Sync Linear issues into a Notion database
+  description: Mirror Linear issues into a Notion database (one Notion page per issue) with status, assignee, and priority kept in sync so non-engineering teams can read project status in Notion.
+  tags:
+  - Linear
+  - Integration
+  - Knowledge base
+  - notion
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    NOTION_API_KEY: NOTION_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Query Linear issues via GraphQL and react to update webhooks to keep Notion in sync.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: notion
+    baseUri: https://api.notion.com
+    description: Notion API operations consumed by this integration.
+    resources:
+    - name: v1-pages
+      path: /v1/pages
+      operations:
+      - name: createpage
+        method: POST
+        description: 'Notion API: createPage'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: v1-pages-page-id
+      path: /v1/pages/{page_id}
+      operations:
+      - name: updatepage
+        method: PATCH
+        description: 'Notion API: updatePage'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: page_id
+          in: path
+          type: string
+          description: Path parameter page_id.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-notion-mcp
+    description: MCP adapter for the linear-notion integration.
+    tools:
+    - name: linear_notion
+      description: Execute the linear notion integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-notion-rest
+    port: 8080
+    description: REST adapter for the linear-notion integration.
+    resources:
+    - path: /linear-notion
+      name: linear-notion
+      description: REST surface for the linear-notion integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-notion integration.
+        call: linear_notion
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

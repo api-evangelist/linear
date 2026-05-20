@@ -1,0 +1,95 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Summarize a Linear issue thread with Claude
+  description: On demand (or when a Linear issue exceeds N comments), call Anthropic's Claude API to produce an executive summary of the thread and post it back as a Linear comment so the next engineer can ramp fast.
+  tags:
+  - Linear
+  - Integration
+  - AI
+  - anthropic
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    ANTHROPIC_API_KEY: ANTHROPIC_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Fetch the Linear issue + comment thread via GraphQL, then post Claude's summary back as a new comment via a GraphQL mutation.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: anthropic
+    baseUri: https://api.anthropic.com
+    description: Anthropic Messages API operations consumed by this integration.
+    resources:
+    - name: v1-messages
+      path: /v1/messages
+      operations:
+      - name: createmessage
+        method: POST
+        description: 'Anthropic Messages API: createMessage'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-anthropic-mcp
+    description: MCP adapter for the linear-anthropic integration.
+    tools:
+    - name: linear_anthropic
+      description: Execute the linear anthropic integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-anthropic-rest
+    port: 8080
+    description: REST adapter for the linear-anthropic integration.
+    resources:
+    - path: /linear-anthropic
+      name: linear-anthropic
+      description: REST surface for the linear-anthropic integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-anthropic integration.
+        call: linear_anthropic
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

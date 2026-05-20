@@ -1,0 +1,117 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Convert Intercom conversations into Linear bugs
+  description: When an Intercom conversation is tagged "bug", create a Linear issue in the engineering triage project with the conversation transcript attached and link it back into the Intercom conversation.
+  tags:
+  - Linear
+  - Integration
+  - Support to engineering
+  - intercom
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    INTERCOM_API_KEY: INTERCOM_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the bug issue from the Intercom conversation.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: intercom
+    baseUri: https://api.intercom.io
+    description: Intercom API operations consumed by this integration.
+    resources:
+    - name: conversations-id
+      path: /conversations/{id}
+      operations:
+      - name: getconversation
+        method: GET
+        description: 'Intercom API: getConversation'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: Path parameter id.
+          required: true
+    - name: conversations-id-reply
+      path: /conversations/{id}/reply
+      operations:
+      - name: replytoconversation
+        method: POST
+        description: 'Intercom API: replyToConversation'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: Path parameter id.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-intercom-mcp
+    description: MCP adapter for the linear-intercom integration.
+    tools:
+    - name: linear_intercom
+      description: Execute the linear intercom integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-intercom-rest
+    port: 8080
+    description: REST adapter for the linear-intercom integration.
+    resources:
+    - path: /linear-intercom
+      name: linear-intercom
+      description: REST surface for the linear-intercom integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-intercom integration.
+        call: linear_intercom
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

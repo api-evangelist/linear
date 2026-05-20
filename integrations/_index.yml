@@ -1,0 +1,60 @@
+- slug: linear-github
+  label: Create Linear issues from GitHub pull requests
+  partner: github
+  category: Source control
+  use_case: When a GitHub pull request is opened (or labeled "needs-issue"), create a matching Linear issue, link the PR URL as an attachment, and post the new issue URL back to the PR as a comment.
+- slug: linear-gitlab
+  label: Mirror GitLab merge requests as Linear issues
+  partner: gitlab
+  category: Source control
+  use_case: When a GitLab merge request is opened or transitions state, create or update the corresponding Linear issue with reviewers, status, and a back-link to the merge request.
+- slug: linear-slack
+  label: Post Linear issue updates into Slack channels
+  partner: slack
+  category: Chat
+  use_case: When a Linear issue is created, assigned, or transitions to Done, post a formatted message to a configured Slack channel via Incoming Webhook.
+- slug: linear-discord
+  label: Mirror Linear issue activity into a Discord channel
+  partner: discord
+  category: Chat
+  use_case: For each Linear issue state change (created, assigned, completed), post a structured message to a Discord channel via an Incoming Webhook so community teams stay in the loop.
+- slug: linear-figma
+  label: Turn Figma comments into Linear issues
+  partner: figma
+  category: Design collaboration
+  use_case: When a Figma comment is created with an "issue" trigger, create a matching Linear issue in the design team's project with the Figma file URL attached.
+- slug: linear-sentry
+  label: Convert Sentry errors into Linear issues
+  partner: sentry
+  category: Observability
+  use_case: When a Sentry issue crosses a threshold (frequency or new-in-release), create a matching Linear issue in the owning team's project with the stack trace and Sentry permalink attached.
+- slug: linear-datadog
+  label: Open Linear issues from Datadog monitor alerts
+  partner: datadog
+  category: Observability
+  use_case: When a Datadog monitor enters Alert state, open a Linear issue in the owning team's triage project with the monitor query, alert message, and snapshot URL attached.
+- slug: linear-pagerduty
+  label: Spawn Linear follow-up issues from PagerDuty incidents
+  partner: pagerduty
+  category: Incidents
+  use_case: When a PagerDuty incident resolves, create a Linear postmortem / follow-up issue assigned to the on-call engineer with incident timeline and responder list.
+- slug: linear-notion
+  label: Sync Linear issues into a Notion database
+  partner: notion
+  category: Knowledge base
+  use_case: Mirror Linear issues into a Notion database (one Notion page per issue) with status, assignee, and priority kept in sync so non-engineering teams can read project status in Notion.
+- slug: linear-zendesk
+  label: Escalate Zendesk tickets into Linear engineering issues
+  partner: zendesk
+  category: Support to engineering
+  use_case: When a Zendesk support agent escalates a ticket, create a linked Linear issue in the engineering team's project and post the Linear URL back into the Zendesk ticket as an internal note.
+- slug: linear-intercom
+  label: Convert Intercom conversations into Linear bugs
+  partner: intercom
+  category: Support to engineering
+  use_case: When an Intercom conversation is tagged "bug", create a Linear issue in the engineering triage project with the conversation transcript attached and link it back into the Intercom conversation.
+- slug: linear-anthropic
+  label: Summarize a Linear issue thread with Claude
+  partner: anthropic
+  category: AI
+  use_case: On demand (or when a Linear issue exceeds N comments), call Anthropic's Claude API to produce an executive summary of the thread and post it back as a Linear comment so the next engineer can ramp fast.

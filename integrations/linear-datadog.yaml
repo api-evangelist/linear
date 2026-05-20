@@ -1,0 +1,112 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Open Linear issues from Datadog monitor alerts
+  description: When a Datadog monitor enters Alert state, open a Linear issue in the owning team's triage project with the monitor query, alert message, and snapshot URL attached.
+  tags:
+  - Linear
+  - Integration
+  - Observability
+  - datadog
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    DATADOG_API_KEY: DATADOG_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the triage issue from the Datadog alert.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: datadog
+    baseUri: https://api.datadoghq.com
+    description: Datadog API operations consumed by this integration.
+    resources:
+    - name: api-v1-monitor-monitor-id
+      path: /api/v1/monitor/{monitor_id}
+      operations:
+      - name: getmonitor
+        method: GET
+        description: 'Datadog API: getMonitor'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: monitor_id
+          in: path
+          type: string
+          description: Path parameter monitor_id.
+          required: true
+    - name: api-v1-events
+      path: /api/v1/events
+      operations:
+      - name: postevent
+        method: POST
+        description: 'Datadog API: postEvent'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-datadog-mcp
+    description: MCP adapter for the linear-datadog integration.
+    tools:
+    - name: linear_datadog
+      description: Execute the linear datadog integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-datadog-rest
+    port: 8080
+    description: REST adapter for the linear-datadog integration.
+    resources:
+    - path: /linear-datadog
+      name: linear-datadog
+      description: REST surface for the linear-datadog integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-datadog integration.
+        call: linear_datadog
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

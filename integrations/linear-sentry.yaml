@@ -1,0 +1,112 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Convert Sentry errors into Linear issues
+  description: When a Sentry issue crosses a threshold (frequency or new-in-release), create a matching Linear issue in the owning team's project with the stack trace and Sentry permalink attached.
+  tags:
+  - Linear
+  - Integration
+  - Observability
+  - sentry
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    SENTRY_API_KEY: SENTRY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the issue and link the Sentry permalink as an attachment.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: sentry
+    baseUri: https://sentry.io/api/0
+    description: Sentry REST API operations consumed by this integration.
+    resources:
+    - name: issues-issue-id
+      path: /issues/{issue_id}/
+      operations:
+      - name: getsentryissue
+        method: GET
+        description: 'Sentry REST API: getSentryIssue'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: issue_id
+          in: path
+          type: string
+          description: Path parameter issue_id.
+          required: true
+    - name: issues-issue-id-events-latest
+      path: /issues/{issue_id}/events/latest/
+      operations:
+      - name: getlatestevent
+        method: GET
+        description: 'Sentry REST API: getLatestEvent'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: issue_id
+          in: path
+          type: string
+          description: Path parameter issue_id.
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-sentry-mcp
+    description: MCP adapter for the linear-sentry integration.
+    tools:
+    - name: linear_sentry
+      description: Execute the linear sentry integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-sentry-rest
+    port: 8080
+    description: REST adapter for the linear-sentry integration.
+    resources:
+    - path: /linear-sentry
+      name: linear-sentry
+      description: REST surface for the linear-sentry integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-sentry integration.
+        call: linear_sentry
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

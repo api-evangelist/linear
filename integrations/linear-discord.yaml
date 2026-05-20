@@ -1,0 +1,105 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Mirror Linear issue activity into a Discord channel
+  description: For each Linear issue state change (created, assigned, completed), post a structured message to a Discord channel via an Incoming Webhook so community teams stay in the loop.
+  tags:
+  - Linear
+  - Integration
+  - Chat
+  - discord
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    DISCORD_API_KEY: DISCORD_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Fetch Linear issue context for the Discord webhook payload.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: discord
+    baseUri: https://discord.com/api
+    description: Discord Webhooks API operations consumed by this integration.
+    resources:
+    - name: webhooks-webhook-id-webhook-token
+      path: /webhooks/{webhook_id}/{webhook_token}
+      operations:
+      - name: executewebhook
+        method: POST
+        description: 'Discord Webhooks API: executeWebhook'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: webhook_id
+          in: path
+          type: string
+          description: Path parameter webhook_id.
+          required: true
+        - name: webhook_token
+          in: path
+          type: string
+          description: Path parameter webhook_token.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-discord-mcp
+    description: MCP adapter for the linear-discord integration.
+    tools:
+    - name: linear_discord
+      description: Execute the linear discord integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-discord-rest
+    port: 8080
+    description: REST adapter for the linear-discord integration.
+    resources:
+    - path: /linear-discord
+      name: linear-discord
+      description: REST surface for the linear-discord integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-discord integration.
+        call: linear_discord
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

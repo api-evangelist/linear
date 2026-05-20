@@ -1,0 +1,117 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Escalate Zendesk tickets into Linear engineering issues
+  description: When a Zendesk support agent escalates a ticket, create a linked Linear issue in the engineering team's project and post the Linear URL back into the Zendesk ticket as an internal note.
+  tags:
+  - Linear
+  - Integration
+  - Support to engineering
+  - zendesk
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    ZENDESK_API_KEY: ZENDESK_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the escalated engineering issue.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: zendesk
+    baseUri: https://yoursubdomain.zendesk.com
+    description: Zendesk Support API operations consumed by this integration.
+    resources:
+    - name: api-v2-tickets-ticket-id-json
+      path: /api/v2/tickets/{ticket_id}.json
+      operations:
+      - name: getticket
+        method: GET
+        description: 'Zendesk Support API: getTicket'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: ticket_id
+          in: path
+          type: string
+          description: Path parameter ticket_id.
+          required: true
+    - name: api-v2-tickets-ticket-id-json
+      path: /api/v2/tickets/{ticket_id}.json
+      operations:
+      - name: updateticket
+        method: PUT
+        description: 'Zendesk Support API: updateTicket'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: ticket_id
+          in: path
+          type: string
+          description: Path parameter ticket_id.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-zendesk-mcp
+    description: MCP adapter for the linear-zendesk integration.
+    tools:
+    - name: linear_zendesk
+      description: Execute the linear zendesk integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-zendesk-rest
+    port: 8080
+    description: REST adapter for the linear-zendesk integration.
+    resources:
+    - path: /linear-zendesk
+      name: linear-zendesk
+      description: REST surface for the linear-zendesk integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-zendesk integration.
+        call: linear_zendesk
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

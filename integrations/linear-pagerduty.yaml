@@ -1,0 +1,112 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Spawn Linear follow-up issues from PagerDuty incidents
+  description: When a PagerDuty incident resolves, create a Linear postmortem / follow-up issue assigned to the on-call engineer with incident timeline and responder list.
+  tags:
+  - Linear
+  - Integration
+  - Incidents
+  - pagerduty
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    PAGERDUTY_API_KEY: PAGERDUTY_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the postmortem follow-up issue.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: pagerduty
+    baseUri: https://api.pagerduty.com
+    description: PagerDuty REST API operations consumed by this integration.
+    resources:
+    - name: incidents-id
+      path: /incidents/{id}
+      operations:
+      - name: getincident
+        method: GET
+        description: 'PagerDuty REST API: getIncident'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: Path parameter id.
+          required: true
+    - name: incidents-id-log-entries
+      path: /incidents/{id}/log_entries
+      operations:
+      - name: listincidentlogentries
+        method: GET
+        description: 'PagerDuty REST API: listIncidentLogEntries'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: id
+          in: path
+          type: string
+          description: Path parameter id.
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-pagerduty-mcp
+    description: MCP adapter for the linear-pagerduty integration.
+    tools:
+    - name: linear_pagerduty
+      description: Execute the linear pagerduty integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-pagerduty-rest
+    port: 8080
+    description: REST adapter for the linear-pagerduty integration.
+    resources:
+    - path: /linear-pagerduty
+      name: linear-pagerduty
+      description: REST surface for the linear-pagerduty integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-pagerduty integration.
+        call: linear_pagerduty
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.

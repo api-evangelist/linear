@@ -1,0 +1,233 @@
+# Curated top Linear integrations.
+# Each entry becomes one Naftiko capability YAML in integrations/.
+# Linear's API is GraphQL-only — every provider op routes through POST /graphql
+# with a query / mutation in the body. uploadFile is reserved for attachments.
+
+# Source code platforms (2)
+- partner: github
+  name: Create Linear issues from GitHub pull requests
+  category: Source control
+  use_case: When a GitHub pull request is opened (or labeled "needs-issue"), create a matching Linear issue, link the PR URL as an attachment, and post the new issue URL back to the PR as a comment.
+  partner_baseUri: https://api.github.com
+  partner_api: GitHub REST API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the issue and attach the PR URL.
+    - method: POST
+      path: /graphql/upload
+      name: uploadFile
+      description: Upload a file referenced by the PR (e.g. screenshot) into Linear as an attachment.
+  partner_ops:
+    - method: GET
+      path: /repos/{owner}/{repo}/pulls/{pull_number}
+      name: getPullRequest
+    - method: POST
+      path: /repos/{owner}/{repo}/issues/{issue_number}/comments
+      name: createIssueComment
+
+- partner: gitlab
+  name: Mirror GitLab merge requests as Linear issues
+  category: Source control
+  use_case: When a GitLab merge request is opened or transitions state, create or update the corresponding Linear issue with reviewers, status, and a back-link to the merge request.
+  partner_baseUri: https://gitlab.com/api/v4
+  partner_api: GitLab REST API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create or update the issue mirrored from the merge request.
+  partner_ops:
+    - method: GET
+      path: /projects/{id}/merge_requests/{merge_request_iid}
+      name: getMergeRequest
+    - method: POST
+      path: /projects/{id}/merge_requests/{merge_request_iid}/notes
+      name: createMergeRequestNote
+
+# Chat / collaboration (3)
+- partner: slack
+  name: Post Linear issue updates into Slack channels
+  category: Chat
+  use_case: When a Linear issue is created, assigned, or transitions to Done, post a formatted message to a configured Slack channel via Incoming Webhook.
+  partner_baseUri: https://hooks.slack.com
+  partner_api: Slack Incoming Webhooks
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Subscribe to Linear issue state changes via GraphQL polling or fetch the issue details for the Slack payload.
+  partner_ops:
+    - method: POST
+      path: /services/{T}/{B}/{X}
+      name: postMessage
+
+- partner: discord
+  name: Mirror Linear issue activity into a Discord channel
+  category: Chat
+  use_case: For each Linear issue state change (created, assigned, completed), post a structured message to a Discord channel via an Incoming Webhook so community teams stay in the loop.
+  partner_baseUri: https://discord.com/api
+  partner_api: Discord Webhooks API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Fetch Linear issue context for the Discord webhook payload.
+  partner_ops:
+    - method: POST
+      path: /webhooks/{webhook_id}/{webhook_token}
+      name: executeWebhook
+
+- partner: figma
+  name: Turn Figma comments into Linear issues
+  category: Design collaboration
+  use_case: When a Figma comment is created with an "issue" trigger, create a matching Linear issue in the design team's project with the Figma file URL attached.
+  partner_baseUri: https://api.figma.com
+  partner_api: Figma REST API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the issue with Figma file URL as attachment.
+  partner_ops:
+    - method: GET
+      path: /v1/files/{file_key}/comments
+      name: listFileComments
+    - method: POST
+      path: /v1/files/{file_key}/comments
+      name: postFileComment
+
+# Observability / incidents (3)
+- partner: sentry
+  name: Convert Sentry errors into Linear issues
+  category: Observability
+  use_case: When a Sentry issue crosses a threshold (frequency or new-in-release), create a matching Linear issue in the owning team's project with the stack trace and Sentry permalink attached.
+  partner_baseUri: https://sentry.io/api/0
+  partner_api: Sentry REST API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the issue and link the Sentry permalink as an attachment.
+  partner_ops:
+    - method: GET
+      path: /issues/{issue_id}/
+      name: getSentryIssue
+    - method: GET
+      path: /issues/{issue_id}/events/latest/
+      name: getLatestEvent
+
+- partner: datadog
+  name: Open Linear issues from Datadog monitor alerts
+  category: Observability
+  use_case: When a Datadog monitor enters Alert state, open a Linear issue in the owning team's triage project with the monitor query, alert message, and snapshot URL attached.
+  partner_baseUri: https://api.datadoghq.com
+  partner_api: Datadog API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the triage issue from the Datadog alert.
+  partner_ops:
+    - method: GET
+      path: /api/v1/monitor/{monitor_id}
+      name: getMonitor
+    - method: POST
+      path: /api/v1/events
+      name: postEvent
+
+- partner: pagerduty
+  name: Spawn Linear follow-up issues from PagerDuty incidents
+  category: Incidents
+  use_case: When a PagerDuty incident resolves, create a Linear postmortem / follow-up issue assigned to the on-call engineer with incident timeline and responder list.
+  partner_baseUri: https://api.pagerduty.com
+  partner_api: PagerDuty REST API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the postmortem follow-up issue.
+  partner_ops:
+    - method: GET
+      path: /incidents/{id}
+      name: getIncident
+    - method: GET
+      path: /incidents/{id}/log_entries
+      name: listIncidentLogEntries
+
+# Knowledge / docs (1)
+- partner: notion
+  name: Sync Linear issues into a Notion database
+  category: Knowledge base
+  use_case: Mirror Linear issues into a Notion database (one Notion page per issue) with status, assignee, and priority kept in sync so non-engineering teams can read project status in Notion.
+  partner_baseUri: https://api.notion.com
+  partner_api: Notion API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Query Linear issues via GraphQL and react to update webhooks to keep Notion in sync.
+  partner_ops:
+    - method: POST
+      path: /v1/pages
+      name: createPage
+    - method: PATCH
+      path: /v1/pages/{page_id}
+      name: updatePage
+
+# Customer-facing → engineering bridges (2)
+- partner: zendesk
+  name: Escalate Zendesk tickets into Linear engineering issues
+  category: Support to engineering
+  use_case: When a Zendesk support agent escalates a ticket, create a linked Linear issue in the engineering team's project and post the Linear URL back into the Zendesk ticket as an internal note.
+  partner_baseUri: https://yoursubdomain.zendesk.com
+  partner_api: Zendesk Support API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the escalated engineering issue.
+  partner_ops:
+    - method: GET
+      path: /api/v2/tickets/{ticket_id}.json
+      name: getTicket
+    - method: PUT
+      path: /api/v2/tickets/{ticket_id}.json
+      name: updateTicket
+
+- partner: intercom
+  name: Convert Intercom conversations into Linear bugs
+  category: Support to engineering
+  use_case: When an Intercom conversation is tagged "bug", create a Linear issue in the engineering triage project with the conversation transcript attached and link it back into the Intercom conversation.
+  partner_baseUri: https://api.intercom.io
+  partner_api: Intercom API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Run a Linear GraphQL mutation to create the bug issue from the Intercom conversation.
+  partner_ops:
+    - method: GET
+      path: /conversations/{id}
+      name: getConversation
+    - method: POST
+      path: /conversations/{id}/reply
+      name: replyToConversation
+
+# AI (1)
+- partner: anthropic
+  name: Summarize a Linear issue thread with Claude
+  category: AI
+  use_case: On demand (or when a Linear issue exceeds N comments), call Anthropic's Claude API to produce an executive summary of the thread and post it back as a Linear comment so the next engineer can ramp fast.
+  partner_baseUri: https://api.anthropic.com
+  partner_api: Anthropic Messages API
+  provider_ops:
+    - method: POST
+      path: /graphql
+      name: executeGraphQLQuery
+      description: Fetch the Linear issue + comment thread via GraphQL, then post Claude's summary back as a new comment via a GraphQL mutation.
+  partner_ops:
+    - method: POST
+      path: /v1/messages
+      name: createMessage

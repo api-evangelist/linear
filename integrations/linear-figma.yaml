@@ -1,0 +1,117 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Turn Figma comments into Linear issues
+  description: When a Figma comment is created with an "issue" trigger, create a matching Linear issue in the design team's project with the Figma file URL attached.
+  tags:
+  - Linear
+  - Integration
+  - Design collaboration
+  - figma
+  created: '2026-05-20'
+  modified: '2026-05-20'
+binds:
+- namespace: env
+  keys:
+    LINEAR_API_KEY: LINEAR_API_KEY
+    FIGMA_API_KEY: FIGMA_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: linear
+    baseUri: https://api.linear.app
+    description: Linear API operations consumed by this integration.
+    resources:
+    - name: graphql
+      path: /graphql
+      operations:
+      - name: executegraphqlquery
+        method: POST
+        description: Run a Linear GraphQL mutation to create the issue with Figma file URL as attachment.
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  - type: http
+    namespace: figma
+    baseUri: https://api.figma.com
+    description: Figma REST API operations consumed by this integration.
+    resources:
+    - name: v1-files-file-key-comments
+      path: /v1/files/{file_key}/comments
+      operations:
+      - name: listfilecomments
+        method: GET
+        description: 'Figma REST API: listFileComments'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: file_key
+          in: path
+          type: string
+          description: Path parameter file_key.
+          required: true
+    - name: v1-files-file-key-comments
+      path: /v1/files/{file_key}/comments
+      operations:
+      - name: postfilecomment
+        method: POST
+        description: 'Figma REST API: postFileComment'
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: file_key
+          in: path
+          type: string
+          description: Path parameter file_key.
+          required: true
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+  exposes:
+  - type: mcp
+    namespace: linear-figma-mcp
+    description: MCP adapter for the linear-figma integration.
+    tools:
+    - name: linear_figma
+      description: Execute the linear figma integration end-to-end.
+      inputSchema:
+        type: object
+        properties:
+          trigger_event:
+            type: object
+            description: Triggering event payload.
+        required:
+        - trigger_event
+  - type: rest
+    namespace: linear-figma-rest
+    port: 8080
+    description: REST adapter for the linear-figma integration.
+    resources:
+    - path: /linear-figma
+      name: linear-figma
+      description: REST surface for the linear-figma integration.
+      operations:
+      - method: POST
+        name: trigger
+        description: Trigger the linear-figma integration.
+        call: linear_figma
+        with:
+          trigger_event: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
