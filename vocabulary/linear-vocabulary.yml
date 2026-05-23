@@ -1,0 +1,9 @@
+name: Linear Domain Vocabulary
+provider: Linear
+providerId: linear
+description: Tag-derived vocabulary for the Linear API surface; sourced from openapi/ tags.
+terms:
+- term: Attachments
+  description: File upload for issue and comment attachments
+- term: GraphQL
+  description: Core GraphQL query and mutation endpoint

@@ -1,0 +1,31 @@
+{
+  "operationId": "executeGraphQLQuery",
+  "method": "POST",
+  "path": "/graphql",
+  "summary": "Execute a GraphQL query or mutation",
+  "requestExamples": [
+    {
+      "contentType": "application/json",
+      "name": "listIssues",
+      "example": {
+        "query": "query {\n  issues(first: 10) {\n    nodes {\n      id\n      title\n      state { name }\n      assignee { name }\n      priority\n      createdAt\n    }\n    pageInfo { hasNextPage endCursor }\n  }\n}\n"
+      }
+    },
+    {
+      "contentType": "application/json",
+      "name": "createIssue",
+      "example": {
+        "query": "mutation CreateIssue($input: IssueCreateInput!) {\n  issueCreate(input: $input) {\n    success\n    issue { id title url }\n  }\n}\n",
+        "variables": {
+          "input": {
+            "title": "Fix login bug",
+            "description": "Users cannot log in with SSO",
+            "teamId": "team_abc123",
+            "priority": 2
+          }
+        }
+      }
+    }
+  ],
+  "responseExamples": []
+}

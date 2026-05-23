@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/GraphQLRequest",
+  "title": "GraphQLRequest",
+  "type": "object",
+  "required": [
+    "query"
+  ],
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "The GraphQL query or mutation string"
+    },
+    "variables": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Named variables for the query or mutation"
+    },
+    "operationName": {
+      "type": "string",
+      "description": "The name of the operation to execute (for multi-operation documents)"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "provider": "Linear",
+  "providerId": "linear",
+  "kind": "json-structure",
+  "description": "Structural overview of the Linear API surface; extracted from openapi/.",
+  "schemaCount": 5,
+  "operationCount": 2,
+  "schemas": [
+    {
+      "name": "GraphQLRequest",
+      "type": "object",
+      "propertyCount": 3,
+      "required": [
+        "query"
+      ]
+    },
+    {
+      "name": "GraphQLResponse",
+      "type": "object",
+      "propertyCount": 2,
+      "required": []
+    },
+    {
+      "name": "GraphQLError",
+      "type": "object",
+      "propertyCount": 4,
+      "required": []
+    },
+    {
+      "name": "FileUploadResponse",
+      "type": "object",
+      "propertyCount": 3,
+      "required": []
+    },
+    {
+      "name": "ErrorResponse",
+      "type": "object",
+      "propertyCount": 2,
+      "required": []
+    }
+  ],
+  "operations": [
+    {
+      "method": "POST",
+      "path": "/graphql",
+      "operationId": "executeGraphQLQuery",
+      "summary": "Execute a GraphQL query or mutation",
+      "tags": [
+        "GraphQL"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/graphql/upload",
+      "operationId": "uploadFile",
+      "summary": "Upload a file attachment",
+      "tags": [
+        "Attachments"
+      ]
+    }
+  ]
+}

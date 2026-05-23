@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "#/components/schemas/FileUploadResponse",
+  "title": "FileUploadResponse",
+  "type": "object",
+  "properties": {
+    "uploadUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Signed URL to PUT the file to"
+    },
+    "assetUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to reference the asset in Linear"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Headers required when uploading to the signed URL"
+    }
+  }
+}
