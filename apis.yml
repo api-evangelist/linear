@@ -38,13 +38,12 @@ apis:
     type: JSONSchema
   - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/json-ld/linear-context.jsonld
     type: JSONLDContext
-  - type: NaftikoCapability
-    url: capabilities/graphql-attachments.yaml
-  - type: NaftikoCapability
-    url: capabilities/graphql-graphql.yaml
-  description: Linear's public GraphQL API provides full access to create, read, update, and query issues, projects, cycles,
-    roadmaps, and teams. It is the same API Linear uses internally for its own applications, supporting pagination, filtering,
-    attachments, and file uploads.
+  - url: graphql/linear-graphql.md
+    type: GraphQL
+  description: >-
+    Linear's public GraphQL API provides full access to create, read, update, and query issues, projects, cycles,
+    roadmaps, and teams. It is the same API Linear uses internally for its own applications, supporting pagination,
+    filtering, attachments, and file uploads.
 - aid: linear:linear-webhooks-api
   name: Linear Webhooks API
   tags:
@@ -61,9 +60,10 @@ apis:
     type: GettingStarted
   - url: https://raw.githubusercontent.com/api-evangelist/linear/refs/heads/main/asyncapi/linear-webhooks-asyncapi.yml
     type: AsyncAPI
-  description: Linear webhooks deliver HTTP push notifications whenever data is created, updated, or removed. Webhooks are
-    organization-scoped and can be configured for all public teams or a single team, enabling integrations that trigger CI
-    builds, update external systems, or send messages based on issue activity.
+  description: >-
+    Linear webhooks deliver HTTP push notifications whenever data is created, updated, or removed. Webhooks are
+    organization-scoped and can be configured for all public teams or a single team, enabling integrations that
+    trigger CI builds, update external systems, or send messages based on issue activity.
 common:
 - type: LinkedIn
   url: https://www.linkedin.com/company/linearapp
@@ -126,9 +126,10 @@ common:
   url: https://linear.app/integrations
 - type: LLMsTxt
   url: https://linear.app/llms.txt
-description: Linear's public API is built using GraphQL. It's the same API we use internally for developing our applications.
-  If you are new to GraphQL, Apollo has resources for beginners. The official GraphQL documentation is another good starting
-  point.
+description: >-
+  Linear's public API is built using GraphQL. It's the same API we use internally for developing our applications. If
+  you are new to GraphQL, Apollo has resources for beginners. The official GraphQL documentation is another good
+  starting point.
 integrations:
 - name: Essentials
 - name: Agents
