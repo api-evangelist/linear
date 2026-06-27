@@ -124,7 +124,7 @@ common:
   updated: '2026-05-04'
 - type: Integrations
   url: https://linear.app/integrations
-- type: LLMsTxt
+- type: LlmsText
   url: https://linear.app/llms.txt
 description: >-
   Linear's public API is built using GraphQL. It's the same API we use internally for developing our applications. If
