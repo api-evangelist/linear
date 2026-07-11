@@ -143,6 +143,14 @@ integrations:
 - name: Media & Design
 
 common:
+  - type: TrustCenter
+    url: security/linear-trust-center.yml
+  - type: VulnerabilityDisclosure
+    url: security/linear-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/linear-domain-security.yml
+  - type: Authentication
+    url: authentication/linear-authentication.yml
   - type: OAuthScopes
     url: scopes/linear-scopes.yml
   - url: https://linear.app/rss/now.xml

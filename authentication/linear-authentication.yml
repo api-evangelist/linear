@@ -1,0 +1,26 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/linear-graphql-openapi.yml
+summary:
+  types:
+  - http
+  - oauth2
+  oauth2_flows:
+  - authorizationCode
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  description: Personal API key obtained from Linear settings
+  sources:
+  - openapi/linear-graphql-openapi.yml
+- name: OAuth2
+  type: oauth2
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://linear.app/oauth/authorize
+    tokenUrl: https://api.linear.app/oauth/token
+    scopes: 4
+  description: OAuth 2.0 authorization code flow
+  sources:
+  - openapi/linear-graphql-openapi.yml
