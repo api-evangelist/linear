@@ -141,3 +141,9 @@ integrations:
 - name: Customer Experience
 - name: Security & Compliance
 - name: Media & Design
+
+common:
+  - type: OAuthScopes
+    url: scopes/linear-scopes.yml
+  - url: https://linear.app/rss/now.xml
+    type: Blog

@@ -1,0 +1,36 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/linear-graphql-openapi.yml
+schemes:
+- name: OAuth2
+  source: openapi/linear-graphql-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://linear.app/oauth/authorize
+    tokenUrl: https://api.linear.app/oauth/token
+  description: OAuth 2.0 authorization code flow
+scopes:
+- scope: issues:create
+  description: Create issues
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/linear-graphql-openapi.yml
+- scope: issues:read
+  description: Read issues
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/linear-graphql-openapi.yml
+- scope: read
+  description: Read access to all resources
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/linear-graphql-openapi.yml
+- scope: write
+  description: Write access to all resources
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/linear-graphql-openapi.yml
