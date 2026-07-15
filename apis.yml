@@ -143,6 +143,8 @@ integrations:
 - name: Media & Design
 
 common:
+  - type: AgenticAccess
+    url: agentic-access/linear-agentic-access.yml
   - type: TrustCenter
     url: security/linear-trust-center.yml
   - type: VulnerabilityDisclosure
