@@ -1,0 +1,168 @@
+openapi: 3.1.0
+info:
+  title: Linear Attachments GraphQL API
+  description: Linear's public GraphQL API provides full access to create, read, update, and query issues, projects, cycles, roadmaps, and teams. It is the same API Linear uses internally for its own applications, supporting pagination, filtering, attachments, and file uploads.
+  version: 2.0.0
+  contact:
+    name: Linear Support
+    url: https://linear.app/contact/support
+  license:
+    name: Proprietary
+    url: https://linear.app/terms
+servers:
+- url: https://api.linear.app/graphql
+  description: Linear GraphQL endpoint
+security:
+- BearerAuth: []
+- OAuth2:
+  - read
+  - write
+tags:
+- name: GraphQL
+  description: Core GraphQL query and mutation endpoint
+paths:
+  /graphql:
+    post:
+      operationId: executeGraphQLQuery
+      summary: Execute a GraphQL query or mutation
+      description: Send a GraphQL query or mutation to the Linear API. All operations (issues, projects, teams, cycles, roadmaps, comments, attachments) are performed through this single endpoint using GraphQL introspection.
+      tags:
+      - GraphQL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphQLRequest'
+            examples:
+              listIssues:
+                summary: List issues
+                value:
+                  query: "query {\n  issues(first: 10) {\n    nodes {\n      id\n      title\n      state { name }\n      assignee { name }\n      priority\n      createdAt\n    }\n    pageInfo { hasNextPage endCursor }\n  }\n}\n"
+              createIssue:
+                summary: Create an issue
+                value:
+                  query: "mutation CreateIssue($input: IssueCreateInput!) {\n  issueCreate(input: $input) {\n    success\n    issue { id title url }\n  }\n}\n"
+                  variables:
+                    input:
+                      title: Fix login bug
+                      description: Users cannot log in with SSO
+                      teamId: team_abc123
+                      priority: 2
+      responses:
+        '200':
+          description: GraphQL response (errors may still be present in the response body)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GraphQLResponse'
+        '400':
+          description: Bad request — malformed GraphQL syntax
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized — missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          headers:
+            X-RateLimit-Limit:
+              schema:
+                type: integer
+              description: Maximum requests per window
+            X-RateLimit-Remaining:
+              schema:
+                type: integer
+              description: Requests remaining in the current window
+            X-RateLimit-Reset:
+              schema:
+                type: integer
+              description: Unix timestamp when rate limit resets
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    GraphQLRequest:
+      type: object
+      required:
+      - query
+      properties:
+        query:
+          type: string
+          description: The GraphQL query or mutation string
+        variables:
+          type: object
+          additionalProperties: true
+          description: Named variables for the query or mutation
+        operationName:
+          type: string
+          description: The name of the operation to execute (for multi-operation documents)
+    GraphQLResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          additionalProperties: true
+          description: The data returned by the GraphQL operation
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphQLError'
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error message
+    GraphQLError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+        path:
+          type: array
+          items:
+            type: string
+        extensions:
+          type: object
+          additionalProperties: true
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Personal API key obtained from Linear settings
+    OAuth2:
+      type: oauth2
+      description: OAuth 2.0 authorization code flow
+      flows:
+        authorizationCode:
+          authorizationUrl: https://linear.app/oauth/authorize
+          tokenUrl: https://api.linear.app/oauth/token
+          scopes:
+            read: Read access to all resources
+            write: Write access to all resources
+            issues:create: Create issues
+            issues:read: Read issues
+externalDocs:
+  description: Linear Developer Documentation
+  url: https://linear.app/developers/graphql

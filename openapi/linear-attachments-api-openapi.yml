@@ -1,0 +1,104 @@
+openapi: 3.1.0
+info:
+  title: Linear GraphQL Attachments API
+  description: Linear's public GraphQL API provides full access to create, read, update, and query issues, projects, cycles, roadmaps, and teams. It is the same API Linear uses internally for its own applications, supporting pagination, filtering, attachments, and file uploads.
+  version: 2.0.0
+  contact:
+    name: Linear Support
+    url: https://linear.app/contact/support
+  license:
+    name: Proprietary
+    url: https://linear.app/terms
+servers:
+- url: https://api.linear.app/graphql
+  description: Linear GraphQL endpoint
+security:
+- BearerAuth: []
+- OAuth2:
+  - read
+  - write
+tags:
+- name: Attachments
+  description: File upload for issue and comment attachments
+paths:
+  /graphql/upload:
+    post:
+      operationId: uploadFile
+      summary: Upload a file attachment
+      description: Upload files for use as attachments on issues or comments. Returns a signed URL and asset URL for use in subsequent GraphQL mutations.
+      tags:
+      - Attachments
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload
+                contentType:
+                  type: string
+                  description: MIME type of the file
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error message
+    FileUploadResponse:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+          format: uri
+          description: Signed URL to PUT the file to
+        assetUrl:
+          type: string
+          format: uri
+          description: URL to reference the asset in Linear
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Headers required when uploading to the signed URL
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Personal API key obtained from Linear settings
+    OAuth2:
+      type: oauth2
+      description: OAuth 2.0 authorization code flow
+      flows:
+        authorizationCode:
+          authorizationUrl: https://linear.app/oauth/authorize
+          tokenUrl: https://api.linear.app/oauth/token
+          scopes:
+            read: Read access to all resources
+            write: Write access to all resources
+            issues:create: Create issues
+            issues:read: Read issues
+externalDocs:
+  description: Linear Developer Documentation
+  url: https://linear.app/developers/graphql
